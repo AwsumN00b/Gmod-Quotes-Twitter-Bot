@@ -23,7 +23,7 @@ def read_quotes():
 			line = line.split(" - ", 1)
 
 			try:
-				if "youtu.be" not in line[1] or "[Original Video Removed]" not in line[1]:
+				if "youtu.be" not in line[1] and "[Original Video Removed]" not in line[1]:
 					line[1] += " [We currently don't have a link to the original video, but you can help us by providing one!]"
 				quotes_dict[line[0]] = line[1].strip()
 			except:
@@ -59,7 +59,7 @@ def main():
 			source_video(formatted_quotes[quote])
 
 		#sleep for between 6 and 12 hours before trying to do anything again
-		time.sleep(random.randint(21600, 43200)
+		time.sleep(random.randint(21600, 43200))
 		i += 1
 
 		if i >= 28:
