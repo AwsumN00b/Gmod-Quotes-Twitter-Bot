@@ -36,6 +36,19 @@ def generate_random_quote(dict):
     # picks a random quote to be tweeted
     return random.choice([key for key in dict])
 
+def quotes_buffer(dict, size=7):
+    # as requested by Kamiflage, this will pre-generate some quotes to
+    # avoid repeats too close to eachother and see whats coming ahead of time
+
+    print(chr(27) + "[2J") # clears the terminal window for neatness
+
+    buffer = []
+    while len(buffer) < size:
+        quote = generate_random_quote(dict)
+        if quote not in buffer:
+            buffer.append(quote)
+
+    return buffer
 
 def send_quote(quote):
     api.update_status(quote)
@@ -52,27 +65,33 @@ def source_video(source):
     api.update_status(source, in_reply_to_status_id=last_tweet_id, auto_populate_reply_metadata=True)
     print(source)
 
-def main():
+def send_tweets(list, formatted_quotes):
 
-    formatted_quotes = read_quotes()
-
-    i = 0
-    while True:
-        quote = generate_random_quote(formatted_quotes)
+    for quote in list:
         send_quote(quote)
+
         if formatted_quotes[quote] != None:
             source_video(formatted_quotes[quote])
 
-        #sleep for between 6 and 12 hours before trying to do anything again
-        time.sleep(random.randint(21600, 43200))
-        i += 1
+        print("\n")
 
-        if i >= 28:
-            #this will refresh the program every 7 days
-            #to check if the txt file gets any update
-            formatted_quotes = read_quotes()
-            i = 0
+        wait_time = random.randint(21600, 43200)
+        print("Next quote in {} hours, {:.0f} minutes".format((wait_time // 3600), (wait_time % 3600) / 60))
+        time.sleep(wait_time)
 
+def main():
+
+    # send gmod quotes to twitter until the world explodes
+    while True:
+        formatted_quotes = read_quotes()
+
+        list = quotes_buffer(formatted_quotes)
+        print("Next 7 upcoming quotes are:")
+        for item in list:
+            print(item)
+        print("\n")
+
+        send_tweets(list, formatted_quotes)
 
 if __name__ == "__main__":
     main()
